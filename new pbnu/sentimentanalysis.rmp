@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="10.4.001">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="10.4.001" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="false" class="read_csv" compatibility="10.4.001" expanded="true" height="68" name="Read CSV" width="90" x="179" y="748">
+        <parameter key="csv_file" value="C:\Users\Administrator\Downloads\Compressed\pbnu_sentiment_analysis-main\clean_data_pbnu.csv"/>
+        <parameter key="column_separators" value=","/>
+        <parameter key="trim_lines" value="false"/>
+        <parameter key="multiline_text" value="false"/>
+        <parameter key="use_quotes" value="true"/>
+        <parameter key="quotes_character" value="&quot;"/>
+        <parameter key="escape_character" value="\"/>
+        <parameter key="skip_comments" value="true"/>
+        <parameter key="comment_characters" value="#"/>
+        <parameter key="starting_row" value="1"/>
+        <parameter key="parse_numbers" value="true"/>
+        <parameter key="decimal_character" value="."/>
+        <parameter key="grouped_digits" value="false"/>
+        <parameter key="grouping_character" value=","/>
+        <parameter key="infinity_representation" value=""/>
+        <parameter key="date_format" value=""/>
+        <parameter key="use_header_row" value="true"/>
+        <parameter key="header_row" value="1"/>
+        <parameter key="first_row_as_names" value="true"/>
+        <list key="annotations"/>
+        <parameter key="time_zone" value="SYSTEM"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="encoding" value="windows-1252"/>
+        <parameter key="read_all_values_as_polynominal" value="false"/>
+        <list key="data_set_meta_data_information">
+          <parameter key="0" value="full_text.true.polynominal.attribute"/>
+          <parameter key="1" value="Sentimen.true.polynominal.label"/>
+        </list>
+        <parameter key="read_not_matching_values_as_missings" value="false"/>
+      </operator>
+      <operator activated="false" class="filter_examples" compatibility="10.4.001" expanded="true" height="103" name="Filter Examples (4)" width="90" x="313" y="748">
+        <parameter key="parameter_expression" value=""/>
+        <parameter key="condition_class" value="custom_filters"/>
+        <parameter key="invert_filter" value="false"/>
+        <list key="filters_list">
+          <parameter key="filters_entry_key" value="Sentimen.is_missing."/>
+        </list>
+        <parameter key="filters_logic_and" value="true"/>
+        <parameter key="filters_check_metadata" value="true"/>
+      </operator>
+      <operator activated="false" class="nominal_to_text" compatibility="10.4.001" expanded="true" height="82" name="Nominal to Text (2)" width="90" x="447" y="748">
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="nominal"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="file_path"/>
+        <parameter key="block_type" value="single_value"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="single_value"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+      </operator>
+      <operator activated="false" class="text:process_document_from_data" compatibility="10.0.000" expanded="true" height="82" name="Process Documents from Data (2)" width="90" x="581" y="748">
+        <parameter key="create_word_vector" value="true"/>
+        <parameter key="vector_creation" value="TF-IDF"/>
+        <parameter key="add_meta_information" value="true"/>
+        <parameter key="keep_text" value="true"/>
+        <parameter key="prune_method" value="none"/>
+        <parameter key="prune_below_percent" value="3.0"/>
+        <parameter key="prune_above_percent" value="30.0"/>
+        <parameter key="prune_below_rank" value="0.05"/>
+        <parameter key="prune_above_rank" value="0.95"/>
+        <parameter key="datamanagement" value="double_sparse_array"/>
+        <parameter key="data_management" value="auto"/>
+        <parameter key="select_attributes_and_weights" value="false"/>
+        <list key="specify_weights"/>
+        <process expanded="true">
+          <operator activated="true" class="text:tokenize" compatibility="10.0.000" expanded="true" height="68" name="Tokenize (2)" width="90" x="45" y="34">
+            <parameter key="mode" value="non letters"/>
+            <parameter key="characters" value=".:"/>
+            <parameter key="language" value="English"/>
+            <parameter key="max_token_length" value="3"/>
+          </operator>
+          <operator activated="true" class="text:transform_cases" compatibility="10.0.000" expanded="true" height="68" name="Transform Cases (2)" width="90" x="179" y="34">
+            <parameter key="transform_to" value="lower case"/>
+          </operator>
+          <operator activated="true" class="text:filter_stopwords_dictionary" compatibility="10.0.000" expanded="true" height="82" name="Filter Stopwords (Dictionary) (2)" width="90" x="313" y="34">
+            <parameter key="file" value="C:/Users/Administrator/Downloads/Compressed/pbnu_sentiment_analysis-main/stopwordbahasa.csv"/>
+            <parameter key="case_sensitive" value="false"/>
+            <parameter key="encoding" value="SYSTEM"/>
+          </operator>
+          <operator activated="true" class="text:filter_by_length" compatibility="10.0.000" expanded="true" height="68" name="Filter Tokens (by Length) (2)" width="90" x="447" y="34">
+            <parameter key="min_chars" value="4"/>
+            <parameter key="max_chars" value="25"/>
+          </operator>
+          <connect from_port="document" to_op="Tokenize (2)" to_port="document"/>
+          <connect from_op="Tokenize (2)" from_port="document" to_op="Transform Cases (2)" to_port="document"/>
+          <connect from_op="Transform Cases (2)" from_port="document" to_op="Filter Stopwords (Dictionary) (2)" to_port="document"/>
+          <connect from_op="Filter Stopwords (Dictionary) (2)" from_port="document" to_op="Filter Tokens (by Length) (2)" to_port="document"/>
+          <connect from_op="Filter Tokens (by Length) (2)" from_port="document" to_port="document 1"/>
+          <portSpacing port="source_document" spacing="0"/>
+          <portSpacing port="sink_document 1" spacing="0"/>
+          <portSpacing port="sink_document 2" spacing="0"/>
+        </process>
+        <description align="center" color="transparent" colored="false" width="126">MODELING DATA</description>
+      </operator>
+      <operator activated="false" class="retrieve" compatibility="10.4.001" expanded="true" height="68" name="Retrieve data_latih_sentimen" width="90" x="581" y="901">
+        <parameter key="repository_entry" value="//Local Repository/data/data_latih_sentimen"/>
+      </operator>
+      <operator activated="false" class="union" compatibility="10.4.001" expanded="true" height="82" name="Union" width="90" x="715" y="748"/>
+      <operator activated="false" class="filter_examples" compatibility="10.4.001" expanded="true" height="103" name="Filter Examples (2)" width="90" x="849" y="748">
+        <parameter key="parameter_expression" value=""/>
+        <parameter key="condition_class" value="custom_filters"/>
+        <parameter key="invert_filter" value="false"/>
+        <list key="filters_list">
+          <parameter key="filters_entry_key" value="Sentimen.is_missing."/>
+        </list>
+        <parameter key="filters_logic_and" value="true"/>
+        <parameter key="filters_check_metadata" value="true"/>
+      </operator>
+      <operator activated="false" class="replace_missing_values" compatibility="10.4.001" expanded="true" height="103" name="Replace Missing Values" width="90" x="983" y="748">
+        <parameter key="return_preprocessing_model" value="false"/>
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="attribute_value"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="time"/>
+        <parameter key="block_type" value="attribute_block"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="value_matrix_row_start"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+        <parameter key="default" value="zero"/>
+        <list key="columns"/>
+      </operator>
+      <operator activated="false" class="retrieve" compatibility="10.4.001" expanded="true" height="68" name="Retrieve analisis_sentiment_model" width="90" x="983" y="901">
+        <parameter key="repository_entry" value="//Local Repository/data/analisis_sentiment_model"/>
+      </operator>
+      <operator activated="false" class="apply_model" compatibility="10.4.001" expanded="true" height="82" name="Apply Model" width="90" x="1117" y="748">
+        <list key="application_parameters"/>
+      </operator>
+      <operator activated="false" class="read_csv" compatibility="10.4.001" expanded="true" height="68" name="Read CSV (2)" width="90" x="179" y="1054">
+        <parameter key="csv_file" value="C:\Users\Administrator\Downloads\Compressed\pbnu_sentiment_analysis-main\final_labeled_data.csv"/>
+        <parameter key="column_separators" value=","/>
+        <parameter key="trim_lines" value="false"/>
+        <parameter key="multiline_text" value="false"/>
+        <parameter key="use_quotes" value="true"/>
+        <parameter key="quotes_character" value="&quot;"/>
+        <parameter key="escape_character" value="\"/>
+        <parameter key="skip_comments" value="true"/>
+        <parameter key="comment_characters" value="#"/>
+        <parameter key="starting_row" value="1"/>
+        <parameter key="parse_numbers" value="true"/>
+        <parameter key="decimal_character" value="."/>
+        <parameter key="grouped_digits" value="false"/>
+        <parameter key="grouping_character" value=","/>
+        <parameter key="infinity_representation" value=""/>
+        <parameter key="date_format" value=""/>
+        <parameter key="use_header_row" value="true"/>
+        <parameter key="header_row" value="1"/>
+        <parameter key="first_row_as_names" value="true"/>
+        <list key="annotations"/>
+        <parameter key="time_zone" value="SYSTEM"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="encoding" value="windows-1252"/>
+        <parameter key="read_all_values_as_polynominal" value="false"/>
+        <list key="data_set_meta_data_information">
+          <parameter key="0" value="text.true.polynominal.attribute"/>
+          <parameter key="1" value="Sentimen.true.polynominal.attribute"/>
+          <parameter key="2" value="confidence(Positif).true.real.attribute"/>
+          <parameter key="3" value="confidence(Netral).true.real.attribute"/>
+          <parameter key="4" value="confidence(Negatif).true.real.attribute"/>
+          <parameter key="5" value="confidence(Netrla).true.real.attribute"/>
+          <parameter key="6" value="prediction(Sentimen).true.polynominal.attribute"/>
+        </list>
+        <parameter key="read_not_matching_values_as_missings" value="false"/>
+      </operator>
+      <operator activated="false" class="blending:select_attributes" compatibility="10.4.001" expanded="true" height="82" name="Select Attributes (2)" width="90" x="313" y="1054">
+        <parameter key="type" value="include attributes"/>
+        <parameter key="attribute_filter_type" value="a subset"/>
+        <parameter key="select_attribute" value=""/>
+        <parameter key="select_subset" value="text␞prediction(Sentimen)"/>
+        <parameter key="also_apply_to_special_attributes_(id,_label..)" value="false"/>
+      </operator>
+      <operator activated="false" class="write_csv" compatibility="10.4.001" expanded="true" height="82" name="Write CSV (2)" width="90" x="447" y="1054">
+        <parameter key="csv_file" value="C:/Users/Administrator/Downloads/Compressed/pbnu_sentiment_analysis-main/final_labeled_data.csv"/>
+        <parameter key="column_separator" value=","/>
+        <parameter key="write_attribute_names" value="true"/>
+        <parameter key="quote_nominal_values" value="true"/>
+        <parameter key="format_date_attributes" value="true"/>
+        <parameter key="date_format" value="yyyy-MM-dd HH:mm:ss"/>
+        <parameter key="append_to_file" value="false"/>
+        <parameter key="encoding" value="SYSTEM"/>
+      </operator>
+      <operator activated="false" class="read_csv" compatibility="10.4.001" expanded="true" height="68" name="Read CSV (3)" width="90" x="179" y="289">
+        <parameter key="csv_file" value="C:\Users\Administrator\Downloads\Compressed\pbnu_sentiment_analysis-main\pbnu_raw.csv"/>
+        <parameter key="column_separators" value=","/>
+        <parameter key="trim_lines" value="false"/>
+        <parameter key="multiline_text" value="false"/>
+        <parameter key="use_quotes" value="true"/>
+        <parameter key="quotes_character" value="&quot;"/>
+        <parameter key="escape_character" value="\"/>
+        <parameter key="skip_comments" value="true"/>
+        <parameter key="comment_characters" value="#"/>
+        <parameter key="starting_row" value="1"/>
+        <parameter key="parse_numbers" value="true"/>
+        <parameter key="decimal_character" value="."/>
+        <parameter key="grouped_digits" value="false"/>
+        <parameter key="grouping_character" value=","/>
+        <parameter key="infinity_representation" value=""/>
+        <parameter key="date_format" value=""/>
+        <parameter key="use_header_row" value="true"/>
+        <parameter key="header_row" value="1"/>
+        <parameter key="first_row_as_names" value="true"/>
+        <list key="annotations"/>
+        <parameter key="time_zone" value="SYSTEM"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="encoding" value="windows-1252"/>
+        <parameter key="read_all_values_as_polynominal" value="false"/>
+        <list key="data_set_meta_data_information">
+          <parameter key="0" value="conversation_id_str.true.real.attribute"/>
+          <parameter key="1" value="created_at.true.polynominal.attribute"/>
+          <parameter key="2" value="favorite_count.true.integer.attribute"/>
+          <parameter key="3" value="full_text.true.polynominal.attribute"/>
+          <parameter key="4" value="id_str.true.real.attribute"/>
+          <parameter key="5" value="image_url.true.polynominal.attribute"/>
+          <parameter key="6" value="in_reply_to_screen_name.true.polynominal.attribute"/>
+          <parameter key="7" value="lang.true.polynominal.attribute"/>
+          <parameter key="8" value="location.true.polynominal.attribute"/>
+          <parameter key="9" value="quote_count.true.integer.attribute"/>
+          <parameter key="10" value="reply_count.true.integer.attribute"/>
+          <parameter key="11" value="retweet_count.true.integer.attribute"/>
+          <parameter key="12" value="tweet_url.true.polynominal.attribute"/>
+          <parameter key="13" value="user_id_str.true.real.attribute"/>
+          <parameter key="14" value="username.true.polynominal.attribute"/>
+        </list>
+        <parameter key="read_not_matching_values_as_missings" value="false"/>
+      </operator>
+      <operator activated="false" class="subprocess" compatibility="10.4.001" expanded="true" height="82" name="Subprocess" width="90" x="313" y="289">
+        <process expanded="true">
+          <operator activated="true" class="blending:select_attributes" compatibility="10.4.001" expanded="true" height="82" name="Select Text" width="90" x="45" y="34">
+            <parameter key="type" value="include attributes"/>
+            <parameter key="attribute_filter_type" value="a subset"/>
+            <parameter key="select_attribute" value=""/>
+            <parameter key="select_subset" value="full_text"/>
+            <parameter key="also_apply_to_special_attributes_(id,_label..)" value="false"/>
+          </operator>
+          <operator activated="true" class="replace" compatibility="10.4.001" expanded="true" height="82" name="Replace URL 1" width="90" x="179" y="34">
+            <parameter key="attribute_filter_type" value="subset"/>
+            <parameter key="attribute" value=""/>
+            <parameter key="attributes" value="full_text"/>
+            <parameter key="use_except_expression" value="false"/>
+            <parameter key="value_type" value="nominal"/>
+            <parameter key="use_value_type_exception" value="false"/>
+            <parameter key="except_value_type" value="file_path"/>
+            <parameter key="block_type" value="single_value"/>
+            <parameter key="use_block_type_exception" value="false"/>
+            <parameter key="except_block_type" value="single_value"/>
+            <parameter key="invert_selection" value="false"/>
+            <parameter key="include_special_attributes" value="false"/>
+            <parameter key="replace_what" value="https.*? "/>
+          </operator>
+          <operator activated="true" class="replace" compatibility="10.4.001" expanded="true" height="82" name="Replace URL 2" width="90" x="313" y="34">
+            <parameter key="attribute_filter_type" value="subset"/>
+            <parameter key="attribute" value=""/>
+            <parameter key="attributes" value="full_text"/>
+            <parameter key="use_except_expression" value="false"/>
+            <parameter key="value_type" value="nominal"/>
+            <parameter key="use_value_type_exception" value="false"/>
+            <parameter key="except_value_type" value="file_path"/>
+            <parameter key="block_type" value="single_value"/>
+            <parameter key="use_block_type_exception" value="false"/>
+            <parameter key="except_block_type" value="single_value"/>
+            <parameter key="invert_selection" value="false"/>
+            <parameter key="include_special_attributes" value="false"/>
+            <parameter key="replace_what" value="https.*"/>
+          </operator>
+          <operator activated="true" class="replace" compatibility="10.4.001" expanded="true" height="82" name="Replace Tag" width="90" x="447" y="34">
+            <parameter key="attribute_filter_type" value="all"/>
+            <parameter key="attribute" value=""/>
+            <parameter key="attributes" value=""/>
+            <parameter key="use_except_expression" value="false"/>
+            <parameter key="value_type" value="nominal"/>
+            <parameter key="use_value_type_exception" value="false"/>
+            <parameter key="except_value_type" value="file_path"/>
+            <parameter key="block_type" value="single_value"/>
+            <parameter key="use_block_type_exception" value="false"/>
+            <parameter key="except_block_type" value="single_value"/>
+            <parameter key="invert_selection" value="false"/>
+            <parameter key="include_special_attributes" value="false"/>
+            <parameter key="replace_what" value="#.*? "/>
+          </operator>
+          <operator activated="true" class="replace" compatibility="10.4.001" expanded="true" height="82" name="Replace @" width="90" x="581" y="34">
+            <parameter key="attribute_filter_type" value="all"/>
+            <parameter key="attribute" value=""/>
+            <parameter key="attributes" value=""/>
+            <parameter key="use_except_expression" value="false"/>
+            <parameter key="value_type" value="nominal"/>
+            <parameter key="use_value_type_exception" value="false"/>
+            <parameter key="except_value_type" value="file_path"/>
+            <parameter key="block_type" value="single_value"/>
+            <parameter key="use_block_type_exception" value="false"/>
+            <parameter key="except_block_type" value="single_value"/>
+            <parameter key="invert_selection" value="false"/>
+            <parameter key="include_special_attributes" value="false"/>
+            <parameter key="replace_what" value="@.*? "/>
+          </operator>
+          <operator activated="true" class="replace" compatibility="10.4.001" expanded="true" height="82" name="Replace @ 2" width="90" x="715" y="34">
+            <parameter key="attribute_filter_type" value="all"/>
+            <parameter key="attribute" value=""/>
+            <parameter key="attributes" value=""/>
+            <parameter key="use_except_expression" value="false"/>
+            <parameter key="value_type" value="nominal"/>
+            <parameter key="use_value_type_exception" value="false"/>
+            <parameter key="except_value_type" value="file_path"/>
+            <parameter key="block_type" value="single_value"/>
+            <parameter key="use_block_type_exception" value="false"/>
+            <parameter key="except_block_type" value="single_value"/>
+            <parameter key="invert_selection" value="false"/>
+            <parameter key="include_special_attributes" value="false"/>
+            <parameter key="replace_what" value="@.*"/>
+          </operator>
+          <operator activated="true" class="replace" compatibility="10.4.001" expanded="true" height="82" name="Replace Symbol" width="90" x="849" y="34">
+            <parameter key="attribute_filter_type" value="all"/>
+            <parameter key="attribute" value=""/>
+            <parameter key="attributes" value=""/>
+            <parameter key="use_except_expression" value="false"/>
+            <parameter key="value_type" value="nominal"/>
+            <parameter key="use_value_type_exception" value="false"/>
+            <parameter key="except_value_type" value="file_path"/>
+            <parameter key="block_type" value="single_value"/>
+            <parameter key="use_block_type_exception" value="false"/>
+            <parameter key="except_block_type" value="single_value"/>
+            <parameter key="invert_selection" value="false"/>
+            <parameter key="include_special_attributes" value="false"/>
+            <parameter key="replace_what" value="[!?~`#$%_'&quot;()|:â¬‡ï¸â¬‡ï¸â¬‡ï¸.]"/>
+          </operator>
+          <operator activated="true" class="trim" compatibility="10.4.001" expanded="true" height="82" name="Trim" width="90" x="983" y="34">
+            <parameter key="attribute_filter_type" value="all"/>
+            <parameter key="attribute" value=""/>
+            <parameter key="attributes" value=""/>
+            <parameter key="use_except_expression" value="false"/>
+            <parameter key="value_type" value="nominal"/>
+            <parameter key="use_value_type_exception" value="false"/>
+            <parameter key="except_value_type" value="file_path"/>
+            <parameter key="block_type" value="single_value"/>
+            <parameter key="use_block_type_exception" value="false"/>
+            <parameter key="except_block_type" value="single_value"/>
+            <parameter key="invert_selection" value="false"/>
+            <parameter key="include_special_attributes" value="false"/>
+          </operator>
+          <connect from_port="in 1" to_op="Select Text" to_port="example set input"/>
+          <connect from_op="Select Text" from_port="example set output" to_op="Replace URL 1" to_port="example set input"/>
+          <connect from_op="Replace URL 1" from_port="example set output" to_op="Replace URL 2" to_port="example set input"/>
+          <connect from_op="Replace URL 2" from_port="example set output" to_op="Replace Tag" to_port="example set input"/>
+          <connect from_op="Replace Tag" from_port="example set output" to_op="Replace @" to_port="example set input"/>
+          <connect from_op="Replace @" from_port="example set output" to_op="Replace @ 2" to_port="example set input"/>
+          <connect from_op="Replace @ 2" from_port="example set output" to_op="Replace Symbol" to_port="example set input"/>
+          <connect from_op="Replace Symbol" from_port="example set output" to_op="Trim" to_port="example set input"/>
+          <connect from_op="Trim" from_port="example set output" to_port="out 1"/>
+          <portSpacing port="source_in 1" spacing="0"/>
+          <portSpacing port="source_in 2" spacing="0"/>
+          <portSpacing port="sink_out 1" spacing="0"/>
+          <portSpacing port="sink_out 2" spacing="0"/>
+        </process>
+      </operator>
+      <operator activated="false" class="filter_examples" compatibility="10.4.001" expanded="true" height="103" name="Filter Examples (3)" width="90" x="447" y="289">
+        <parameter key="parameter_expression" value=""/>
+        <parameter key="condition_class" value="custom_filters"/>
+        <parameter key="invert_filter" value="false"/>
+        <list key="filters_list">
+          <parameter key="filters_entry_key" value="full_text.is_not_missing."/>
+        </list>
+        <parameter key="filters_logic_and" value="true"/>
+        <parameter key="filters_check_metadata" value="true"/>
+        <description align="center" color="transparent" colored="false" width="126">TEXT PREPROCESSING</description>
+      </operator>
+      <operator activated="false" class="remove_duplicates" compatibility="10.4.001" expanded="true" height="103" name="Remove Duplicates" width="90" x="581" y="289">
+        <parameter key="attribute_filter_type" value="single"/>
+        <parameter key="attribute" value="full_text"/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="attribute_value"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="time"/>
+        <parameter key="block_type" value="attribute_block"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="value_matrix_row_start"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+        <parameter key="treat_missing_values_as_duplicates" value="false"/>
+      </operator>
+      <operator activated="false" class="write_csv" compatibility="10.4.001" expanded="true" height="82" name="Write CSV" width="90" x="715" y="289">
+        <parameter key="csv_file" value="C:/Users/Administrator/Downloads/Compressed/pbnu_sentiment_analysis-main/clean_data_pbnu.csv"/>
+        <parameter key="column_separator" value=","/>
+        <parameter key="write_attribute_names" value="true"/>
+        <parameter key="quote_nominal_values" value="true"/>
+        <parameter key="format_date_attributes" value="true"/>
+        <parameter key="date_format" value="yyyy-MM-dd HH:mm:ss"/>
+        <parameter key="append_to_file" value="false"/>
+        <parameter key="encoding" value="SYSTEM"/>
+      </operator>
+      <operator activated="false" class="read_csv" compatibility="10.4.001" expanded="true" height="68" name="Read CSV (4)" width="90" x="179" y="493">
+        <parameter key="csv_file" value="C:\Users\Administrator\Downloads\Compressed\pbnu_sentiment_analysis-main\labeled_data_pbnu.csv"/>
+        <parameter key="column_separators" value=","/>
+        <parameter key="trim_lines" value="false"/>
+        <parameter key="multiline_text" value="false"/>
+        <parameter key="use_quotes" value="true"/>
+        <parameter key="quotes_character" value="&quot;"/>
+        <parameter key="escape_character" value="\"/>
+        <parameter key="skip_comments" value="true"/>
+        <parameter key="comment_characters" value="#"/>
+        <parameter key="starting_row" value="1"/>
+        <parameter key="parse_numbers" value="true"/>
+        <parameter key="decimal_character" value="."/>
+        <parameter key="grouped_digits" value="false"/>
+        <parameter key="grouping_character" value=","/>
+        <parameter key="infinity_representation" value=""/>
+        <parameter key="date_format" value=""/>
+        <parameter key="use_header_row" value="true"/>
+        <parameter key="header_row" value="1"/>
+        <parameter key="first_row_as_names" value="true"/>
+        <list key="annotations"/>
+        <parameter key="time_zone" value="SYSTEM"/>
+        <parameter key="locale" value="English (United States)"/>
+        <parameter key="encoding" value="windows-1252"/>
+        <parameter key="read_all_values_as_polynominal" value="false"/>
+        <list key="data_set_meta_data_information">
+          <parameter key="0" value="full_text.true.polynominal.attribute"/>
+          <parameter key="1" value="Sentimen.true.polynominal.attribute"/>
+        </list>
+        <parameter key="read_not_matching_values_as_missings" value="false"/>
+      </operator>
+      <operator activated="false" class="filter_examples" compatibility="10.4.001" expanded="true" height="103" name="Filter Examples" width="90" x="313" y="493">
+        <parameter key="parameter_expression" value=""/>
+        <parameter key="condition_class" value="custom_filters"/>
+        <parameter key="invert_filter" value="false"/>
+        <list key="filters_list">
+          <parameter key="filters_entry_key" value="full_text.is_not_missing."/>
+        </list>
+        <parameter key="filters_logic_and" value="true"/>
+        <parameter key="filters_check_metadata" value="true"/>
+      </operator>
+      <operator activated="false" class="nominal_to_text" compatibility="10.4.001" expanded="true" height="82" name="Nominal to Text" width="90" x="447" y="493">
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="nominal"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="file_path"/>
+        <parameter key="block_type" value="single_value"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="single_value"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+      </operator>
+      <operator activated="false" class="text:process_document_from_data" compatibility="10.0.000" expanded="true" height="82" name="Process Documents from Data" width="90" x="581" y="493">
+        <parameter key="create_word_vector" value="true"/>
+        <parameter key="vector_creation" value="TF-IDF"/>
+        <parameter key="add_meta_information" value="true"/>
+        <parameter key="keep_text" value="true"/>
+        <parameter key="prune_method" value="none"/>
+        <parameter key="prune_below_percent" value="3.0"/>
+        <parameter key="prune_above_percent" value="30.0"/>
+        <parameter key="prune_below_rank" value="0.05"/>
+        <parameter key="prune_above_rank" value="0.95"/>
+        <parameter key="datamanagement" value="double_sparse_array"/>
+        <parameter key="data_management" value="auto"/>
+        <parameter key="select_attributes_and_weights" value="false"/>
+        <list key="specify_weights"/>
+        <process expanded="true">
+          <operator activated="true" class="text:tokenize" compatibility="10.0.000" expanded="true" height="68" name="Tokenize" width="90" x="45" y="34">
+            <parameter key="mode" value="non letters"/>
+            <parameter key="characters" value=".:"/>
+            <parameter key="language" value="English"/>
+            <parameter key="max_token_length" value="3"/>
+          </operator>
+          <operator activated="true" class="text:transform_cases" compatibility="10.0.000" expanded="true" height="68" name="Transform Cases" width="90" x="179" y="34">
+            <parameter key="transform_to" value="lower case"/>
+          </operator>
+          <operator activated="true" class="text:filter_stopwords_dictionary" compatibility="10.0.000" expanded="true" height="82" name="Filter Stopwords (Dictionary)" width="90" x="313" y="34">
+            <parameter key="file" value="C:/Users/Administrator/Downloads/Compressed/pbnu_sentiment_analysis-main/stopwordbahasa.csv"/>
+            <parameter key="case_sensitive" value="false"/>
+            <parameter key="encoding" value="SYSTEM"/>
+          </operator>
+          <operator activated="true" class="text:filter_by_length" compatibility="10.0.000" expanded="true" height="68" name="Filter Tokens (by Length)" width="90" x="447" y="34">
+            <parameter key="min_chars" value="4"/>
+            <parameter key="max_chars" value="25"/>
+          </operator>
+          <connect from_port="document" to_op="Tokenize" to_port="document"/>
+          <connect from_op="Tokenize" from_port="document" to_op="Transform Cases" to_port="document"/>
+          <connect from_op="Transform Cases" from_port="document" to_op="Filter Stopwords (Dictionary)" to_port="document"/>
+          <connect from_op="Filter Stopwords (Dictionary)" from_port="document" to_op="Filter Tokens (by Length)" to_port="document"/>
+          <connect from_op="Filter Tokens (by Length)" from_port="document" to_port="document 1"/>
+          <portSpacing port="source_document" spacing="0"/>
+          <portSpacing port="sink_document 1" spacing="0"/>
+          <portSpacing port="sink_document 2" spacing="0"/>
+        </process>
+      </operator>
+      <operator activated="false" class="naive_bayes" compatibility="10.4.001" expanded="true" height="82" name="Naive Bayes" width="90" x="715" y="493">
+        <parameter key="laplace_correction" value="true"/>
+      </operator>
+      <operator activated="false" class="store" compatibility="10.4.001" expanded="true" height="68" name="Store Data Latih" width="90" x="849" y="595">
+        <parameter key="repository_entry" value="//Local Repository/data/data_latih_sentimen"/>
+      </operator>
+      <operator activated="false" class="store" compatibility="10.4.001" expanded="true" height="68" name="Store Model" width="90" x="849" y="493">
+        <parameter key="repository_entry" value="//Local Repository/data/analisis_sentiment_model"/>
+      </operator>
+      <connect from_op="Read CSV" from_port="output" to_op="Filter Examples (4)" to_port="example set input"/>
+      <connect from_op="Filter Examples (4)" from_port="example set output" to_op="Nominal to Text (2)" to_port="example set input"/>
+      <connect from_op="Nominal to Text (2)" from_port="example set output" to_op="Process Documents from Data (2)" to_port="example set"/>
+      <connect from_op="Process Documents from Data (2)" from_port="example set" to_op="Union" to_port="example set 1"/>
+      <connect from_op="Retrieve data_latih_sentimen" from_port="output" to_op="Union" to_port="example set 2"/>
+      <connect from_op="Union" from_port="union" to_op="Filter Examples (2)" to_port="example set input"/>
+      <connect from_op="Filter Examples (2)" from_port="example set output" to_op="Replace Missing Values" to_port="example set input"/>
+      <connect from_op="Replace Missing Values" from_port="example set output" to_op="Apply Model" to_port="unlabelled data"/>
+      <connect from_op="Retrieve analisis_sentiment_model" from_port="output" to_op="Apply Model" to_port="model"/>
+      <connect from_op="Read CSV (2)" from_port="output" to_op="Select Attributes (2)" to_port="example set input"/>
+      <connect from_op="Select Attributes (2)" from_port="example set output" to_op="Write CSV (2)" to_port="input"/>
+      <connect from_op="Read CSV (3)" from_port="output" to_op="Subprocess" to_port="in 1"/>
+      <connect from_op="Subprocess" from_port="out 1" to_op="Filter Examples (3)" to_port="example set input"/>
+      <connect from_op="Filter Examples (3)" from_port="example set output" to_op="Remove Duplicates" to_port="example set input"/>
+      <connect from_op="Read CSV (4)" from_port="output" to_op="Filter Examples" to_port="example set input"/>
+      <connect from_op="Filter Examples" from_port="example set output" to_op="Nominal to Text" to_port="example set input"/>
+      <connect from_op="Nominal to Text" from_port="example set output" to_op="Process Documents from Data" to_port="example set"/>
+      <connect from_op="Process Documents from Data" from_port="example set" to_op="Naive Bayes" to_port="training set"/>
+      <connect from_op="Naive Bayes" from_port="model" to_op="Store Model" to_port="input"/>
+      <connect from_op="Naive Bayes" from_port="exampleSet" to_op="Store Data Latih" to_port="input"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
